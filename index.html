@@ -313,26 +313,25 @@
             background: #fff;
             border: 2px solid var(--light-bg);
             border-radius: 18px;
-            padding: 24px 0;
+            padding: 20px;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             flex-direction: column; /* Đặt chữ bên dưới ảnh */
         }
 
         .qr-image {
-            width: 100%; /* Chiếm toàn bộ chiều rộng khung */
-            max-width: 240px; /* Giới hạn độ rộng tối đa */
-            height: auto; /* Tự động co giãn theo tỷ lệ */
+            width: 100%; /* Trải dài full width với khung chứa */
+            height: auto;
             object-fit: contain;
             border-radius: 12px;
             border: none;
-            padding: 2px;
+            padding: 0;
             margin: 0 auto;
         }
 
         .qr-instruction {
-            font-size: 16px;
+            font-size: 15px;
             color: var(--text-gray);
             font-weight: 700;
             line-height: 1.4;
@@ -438,7 +437,7 @@
                 </div>
 
                 <div class="dates-container" id="dates_container" style="display: none;">
-                    <div class="dates-title">🌟 Các ngày con đi học 🌟</div>
+                    <div class="dates-title">🌟 Các ngày đã học 🌟</div>
                     <div class="dates-list" id="out_dates"></div>
                 </div>
 
