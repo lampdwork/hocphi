@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Thu Học Phí Tự Động</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff8fab;
+            --secondary: #fb6f92;
+            --light-bg: #ffe5ec;
+            --text-dark: #4a4a4a;
+            --text-gray: #7a7a7a;
+            --card-bg: #ffffff;
+            --accent-yellow: #fff3b0;
+            --accent-green: #bde0fe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8edeb;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        /* --- PHẦN FORM NHẬP LIỆU --- */
+        .form-section {
+            width: 440px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(251, 111, 146, 0.08);
+            height: fit-content;
+        }
+
+        .form-section h2 {
+            margin-bottom: 25px;
+            color: var(--secondary);
+            font-size: 24px;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #f0e6e8;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group input[readonly] {
+            background-color: #f9f9f9;
+            color: var(--secondary);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        #date_picker_input {
+            cursor: pointer;
+            background: #fffdfd;
+            border: 2px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .print-btn, .download-btn {
+            flex: 1;
+            padding: 14px 10px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(251, 111, 146, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #a8d5ba, #81c784);
+            color: white;
+        }
+
+        .print-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* --- VÙNG BỌC PHIẾU THU CHỨA BÓNG ĐỔ (WRAPPER) --- */
+        .receipt-wrapper {
+            padding: 24px; /* Tạo khoảng trống để chứa shadow */
+            background: transparent;
+        }
+
+        /* --- PHẦN PHIẾU HỌC PHÍ (PREVIEW) --- */
+        .receipt-section {
+            width: 420px;
+            background: var(--card-bg);
+            border-radius: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header Dễ thương */
+        .receipt-header {
+            background: linear-gradient(135deg, var(--light-bg), #fff);
+            text-align: center;
+            padding: 35px 20px 20px;
+            border-bottom: 2px dashed #f0ced6;
+            position: relative;
+        }
+
+        .receipt-header .teacher-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .receipt-header .title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin: 8px 0;
+            text-shadow: 2px 2px 0px var(--light-bg);
+        }
+
+        .receipt-header .month {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 143, 171, 0.3);
+        }
+
+        /* Body */
+        .receipt-body {
+            padding: 25px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            font-size: 16px;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-gray);
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        /* Total Box */
+        .total-box {
+            background: linear-gradient(to right, var(--accent-yellow), #ffe066);
+            border-radius: 20px;
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(255, 224, 102, 0.3);
+        }
+
+        .total-label {
+            font-size: 14px;
+            font-weight: 800;
+            color: #d4a373;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .total-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #d4a373;
+        }
+
+        /* Dates */
+        .dates-container {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .dates-title {
+            font-size: 13px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .dates-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .date-badge {
+            background-color: var(--accent-green);
+            color: #4a6fa5;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 2px 4px rgba(189, 224, 254, 0.5);
+        }
+
+        /* Comments */
+        .comments-box {
+            background-color: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .comments-box::before {
+            content: '💬';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 10px;
+            font-size: 18px;
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            display: flex;
+            background: #fff;
+            border: 2px solid var(--light-bg);
+            border-radius: 18px;
+            padding: 16px;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .qr-image {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 2px solid var(--secondary);
+            padding: 2px;
+        }
+
+        .qr-instruction {
+            font-size: 13px;
+            color: var(--text-gray);
+            font-weight: 700;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .footer-msg {
+            text-align: center;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-top: 20px;
+            font-size: 15px;
+        }
+
+        /* --- XỬ LÝ KHI IN --- */
+        @media print {
+            body { background: white; padding: 0; display: block; }
+            .form-section { display: none; }
+            .receipt-wrapper { padding: 0; }
+            .receipt-section { box-shadow: none; width: 100%; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-section">
+        <h2>✨ Tạo Phiếu Thu ✨</h2>
+        
+        <div class="form-group">
+            <label>🏫 Tên Lớp / Trung tâm:</label>
+            <input type="text" id="in_teacher" value="LỚP HỌC LÊ BÌNH" oninput="updateReceipt()">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>📅 Tháng học:</label>
+                <input type="text" id="in_month" value="Tháng 5" oninput="updateReceipt()">
+            </div>
+            <div class="form-group">
+                <label>🧸 Tên bé/học sinh:</label>
+                <input type="text" id="in_student" value="Lê Thanh Chi" oninput="updateReceipt()">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>📌 Chọn các ngày đi học:</label>
+            <input type="text" id="date_picker_input" placeholder="Click vào đây để mở lịch...">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>💎 Học phí/buổi (VNĐ):</label>
+                <input type="number" id="in_fee" value="100000" oninput="updateReceipt()">
+            </div>
+            <div class="form-group">
+                <label>📝 Số buổi:</label>
+                <input type="number" id="in_sessions" value="0" readonly>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>💌 Lời nhắn / Nhận xét:</label>
+            <textarea id="in_comments" oninput="updateReceipt()">Con ngoan, hôm nay học rất tốt và làm bài tập đầy đủ. Cố gắng phát huy con nhé! 🥰</textarea>
+        </div>
+
+        <div class="form-group">
+            <label>📷 Tải ảnh mã QR (Thanh toán, Ngân hàng đính kèm):</label>
+            <input type="file" id="in_qr" accept="image/*">
+        </div>
+
+        <div class="btn-group">
+            <button class="download-btn" onclick="exportToPNG()">🖼️ Tải ảnh PNG</button>
+            <button class="print-btn" onclick="window.print()">🖨️ In / Lưu PDF</button>
+        </div>
+    </div>
+
+    <div class="receipt-wrapper" id="receiptWrapper">
+        <div class="receipt-section" id="receiptCard">
+            <div class="receipt-header">
+                <div class="teacher-name" id="out_teacher">LỚP HỌC LÊ BÌNH</div>
+                <div class="title">PHIẾU HỌC PHÍ</div>
+                <div class="month" id="out_month">Tháng 5</div>
+            </div>
+
+            <div class="receipt-body">
+                <div class="info-row">
+                    <div class="info-label">🧸 Học sinh:</div>
+                    <div class="info-value" id="out_student">Lê Thanh Chi</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">💎 Học phí/buổi:</div>
+                    <div class="info-value" id="out_fee">100.000 đ</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">📝 Số buổi học:</div>
+                    <div class="info-value" id="out_sessions">0</div>
+                </div>
+
+                <div class="total-box">
+                    <div class="total-label">Tổng học phí cần đóng</div>
+                    <div class="total-value" id="out_total">0 đ</div>
+                </div>
+
+                <div class="dates-container" id="dates_container" style="display: none;">
+                    <div class="dates-title">🌟 Các ngày con đi học 🌟</div>
+                    <div class="dates-list" id="out_dates"></div>
+                </div>
+
+                <div class="comments-box" id="out_comments">
+                    Con ngoan, hôm nay học rất tốt và làm bài tập đầy đủ. Cố gắng phát huy con nhé! 🥰
+                </div>
+
+                <div class="qr-section">
+                    <img src="https://via.placeholder.com/150/ff8fab/ffffff?text=QR" alt="QR Code" class="qr-image" id="out_qr_image">
+                    <div class="qr-instruction">
+                        📱 Quét mã QR để thanh toán<br>
+                        <span style="color: var(--secondary); font-size: 11px;">(Đã đính kèm thông tin ngân hàng)</span>
+                    </div>
+                </div>
+                
+                <div class="footer-msg">Cảm ơn ba mẹ đã đồng hành! 💖</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedDatesArray = [];
+
+        // Khởi tạo Flatpickr
+        flatpickr("#date_picker_input", {
+            mode: "multiple",
+            dateFormat: "d/m",
+            locale: "vn",
+            onChange: function(selectedDates, dateStr, instance) {
+                selectedDatesArray = selectedDates; 
+                
+                // 1. Tự động cập nhật số buổi
+                document.getElementById('in_sessions').value = selectedDates.length;
+                
+                // 2. Tự động detect tháng học chứa nhiều ngày nhất
+                if (selectedDates.length > 0) {
+                    const monthCounts = {};
+                    selectedDates.forEach(dateObj => {
+                        const m = dateObj.getMonth() + 1; // getMonth() trả về 0-11 nên cộng thêm 1
+                        monthCounts[m] = (monthCounts[m] || 0) + 1;
+                    });
+                    
+                    let maxCount = 0;
+                    let bestMonth = new Date().getMonth() + 1;
+                    for (const m in monthCounts) {
+                        if (monthCounts[m] > maxCount) {
+                            maxCount = monthCounts[m];
+                            bestMonth = m;
+                        }
+                    }
+                    document.getElementById('in_month').value = `Tháng ${bestMonth}`;
+                } else {
+                    // Nếu không chọn ngày, quay lại tháng hiện tại
+                    document.getElementById('in_month').value = `Tháng ${new Date().getMonth() + 1}`;
+                }
+                
+                // Hiển thị ngày lên phiếu
+                const container = document.getElementById('out_dates');
+                const datesContainer = document.getElementById('dates_container');
+                container.innerHTML = '';
+                
+                if (selectedDates.length > 0) {
+                    datesContainer.style.display = 'block';
+                    
+                    // Sắp xếp ngày theo thứ tự
+                    const sortedDates = [...selectedDates].sort((a,b) => a - b);
+                    
+                    sortedDates.forEach(d => {
+                        const day = String(d.getDate()).padStart(2, '0');
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const span = document.createElement('span');
+                        span.className = 'date-badge';
+                        span.innerText = `${day}/${month}`;
+                        container.appendChild(span);
+                    });
+                } else {
+                    datesContainer.style.display = 'none';
+                }
+                
+                updateReceipt();
+            }
+        });
+
+        // Định dạng tiền tệ
+        const formatCurrency = (number) => {
+            return new Intl.NumberFormat('vi-VN').format(number) + ' đ';
+        };
+
+        // Cập nhật nội dung phiếu
+        const updateReceipt = () => {
+            document.getElementById('out_teacher').innerText = document.getElementById('in_teacher').value;
+            document.getElementById('out_month').innerText = document.getElementById('in_month').value;
+            document.getElementById('out_student').innerText = document.getElementById('in_student').value;
+            document.getElementById('out_comments').innerText = document.getElementById('in_comments').value;
+            
+            const fee = parseInt(document.getElementById('in_fee').value) || 0;
+            const sessions = document.getElementById('in_sessions').value || 0;
+            
+            document.getElementById('out_sessions').innerText = sessions;
+            document.getElementById('out_fee').innerText = formatCurrency(fee);
+            
+            const total = fee * parseInt(sessions);
+            document.getElementById('out_total').innerText = formatCurrency(total);
+        };
+
+        // Xử lý upload ảnh QR
+        document.getElementById('in_qr').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('out_qr_image').src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Chức năng xuất ra file ảnh PNG kèm Shadow
+        function exportToPNG() {
+            const element = document.getElementById('receiptWrapper');
+            
+            html2canvas(element, {
+                scale: 2, // Phóng to gấp 2 lần để ảnh nét
+                useCORS: true, // Cho phép ảnh QR bên ngoài
+                backgroundColor: null // Giữ nền trong suốt
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'phieu_thu_hoc_phi.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // Chạy lần đầu khi load trang
+        document.addEventListener("DOMContentLoaded", function() {
+            const now = new Date();
+            document.getElementById('in_month').value = `Tháng ${now.getMonth() + 1}`;
+            updateReceipt();
+        });
+    </script>
+</body>
+</html>
