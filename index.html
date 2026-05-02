@@ -146,7 +146,7 @@
 
         /* --- VÙNG BỌC PHIẾU THU CHỨA BÓNG ĐỔ (WRAPPER) --- */
         .receipt-wrapper {
-            padding: 24px; /* Tạo khoảng trống để chứa shadow */
+            padding: 24px;
             background: transparent;
         }
 
@@ -155,6 +155,7 @@
             width: 420px;
             background: var(--card-bg);
             border-radius: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.1); /* Viền nhạt */
             box-shadow: 0 15px 40px rgba(0,0,0,0.08);
             overflow: hidden;
             display: flex;
@@ -312,27 +313,28 @@
             background: #fff;
             border: 2px solid var(--light-bg);
             border-radius: 18px;
-            padding: 16px;
+            padding: 24px;
             align-items: center;
             justify-content: center;
             gap: 20px;
+            flex-direction: column; /* Đặt chữ bên dưới ảnh */
         }
 
         .qr-image {
-            width: 110px;
-            height: 110px;
+            width: 200px; /* Kích thước to, nổi bật */
+            height: 200px;
             object-fit: contain;
             border-radius: 12px;
-            border: 2px solid var(--secondary);
+            border: none; /* Đã bỏ viền quanh mã QR */
             padding: 2px;
         }
 
         .qr-instruction {
-            font-size: 13px;
+            font-size: 16px;
             color: var(--text-gray);
             font-weight: 700;
             line-height: 1.4;
-            text-align: left;
+            text-align: center;
         }
 
         .footer-msg {
@@ -348,7 +350,7 @@
             body { background: white; padding: 0; display: block; }
             .form-section { display: none; }
             .receipt-wrapper { padding: 0; }
-            .receipt-section { box-shadow: none; width: 100%; }
+            .receipt-section { box-shadow: none; width: 100%; border: 1px solid rgba(0, 0, 0, 0.1); }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
@@ -443,10 +445,10 @@
                 </div>
 
                 <div class="qr-section">
-                    <img src="https://via.placeholder.com/150/ff8fab/ffffff?text=QR" alt="QR Code" class="qr-image" id="out_qr_image">
+                    <img src="https://via.placeholder.com/200/ff8fab/ffffff?text=QR" alt="QR Code" class="qr-image" id="out_qr_image">
                     <div class="qr-instruction">
                         📱 Quét mã QR để thanh toán<br>
-                        <span style="color: var(--secondary); font-size: 11px;">(Đã đính kèm thông tin ngân hàng)</span>
+                        <span style="color: var(--secondary); font-size: 14px;">(Đã đính kèm thông tin ngân hàng)</span>
                     </div>
                 </div>
                 
@@ -473,7 +475,7 @@
                 if (selectedDates.length > 0) {
                     const monthCounts = {};
                     selectedDates.forEach(dateObj => {
-                        const m = dateObj.getMonth() + 1; // getMonth() trả về 0-11 nên cộng thêm 1
+                        const m = dateObj.getMonth() + 1;
                         monthCounts[m] = (monthCounts[m] || 0) + 1;
                     });
                     
@@ -487,7 +489,6 @@
                     }
                     document.getElementById('in_month').value = `Tháng ${bestMonth}`;
                 } else {
-                    // Nếu không chọn ngày, quay lại tháng hiện tại
                     document.getElementById('in_month').value = `Tháng ${new Date().getMonth() + 1}`;
                 }
                 
@@ -498,8 +499,6 @@
                 
                 if (selectedDates.length > 0) {
                     datesContainer.style.display = 'block';
-                    
-                    // Sắp xếp ngày theo thứ tự
                     const sortedDates = [...selectedDates].sort((a,b) => a - b);
                     
                     sortedDates.forEach(d => {
@@ -552,14 +551,14 @@
             }
         });
 
-        // Chức năng xuất ra file ảnh PNG kèm Shadow
+        // Chức năng xuất ra file ảnh PNG kèm Shadow và full viền
         function exportToPNG() {
-            const element = document.getElementById('receiptWrapper');
+            const wrapper = document.getElementById('receiptWrapper');
             
-            html2canvas(element, {
-                scale: 2, // Phóng to gấp 2 lần để ảnh nét
-                useCORS: true, // Cho phép ảnh QR bên ngoài
-                backgroundColor: null // Giữ nền trong suốt
+            html2canvas(wrapper, {
+                scale: 2, 
+                useCORS: true, 
+                backgroundColor: null, 
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'phieu_thu_hoc_phi.png';
