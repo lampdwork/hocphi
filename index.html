@@ -313,7 +313,7 @@
             background: #fff;
             border: 2px solid var(--light-bg);
             border-radius: 18px;
-            padding: 24px;
+            padding: 24px 0;
             align-items: center;
             justify-content: center;
             gap: 20px;
@@ -321,12 +321,14 @@
         }
 
         .qr-image {
-            width: 200px; /* Kích thước to, nổi bật */
-            height: 200px;
+            width: 100%; /* Chiếm toàn bộ chiều rộng khung */
+            max-width: 240px; /* Giới hạn độ rộng tối đa */
+            height: auto; /* Tự động co giãn theo tỷ lệ */
             object-fit: contain;
             border-radius: 12px;
-            border: none; /* Đã bỏ viền quanh mã QR */
+            border: none;
             padding: 2px;
+            margin: 0 auto;
         }
 
         .qr-instruction {
@@ -445,7 +447,7 @@
                 </div>
 
                 <div class="qr-section">
-                    <img src="https://via.placeholder.com/200/ff8fab/ffffff?text=QR" alt="QR Code" class="qr-image" id="out_qr_image">
+                    <img src="https://via.placeholder.com/300/ff8fab/ffffff?text=QR" alt="QR Code" class="qr-image" id="out_qr_image">
                     <div class="qr-instruction">
                         📱 Quét mã QR để thanh toán<br>
                         <span style="color: var(--secondary); font-size: 14px;">(Đã đính kèm thông tin ngân hàng)</span>
